@@ -8,6 +8,7 @@ import type { Message, ChatMessage, UserMessage } from "./utils/message";
 import { getChatCompletionResponse, AIMessage } from "./utils/openai";
 import { notFound } from "next/navigation";
 import { error, ok } from "./utils/response";
+import { counter} from "./chatRoom";
 
 export const AI_USERNAME = "AI";
 
@@ -78,7 +79,7 @@ function simulateUser(
     if (data.type === "new") {
       messages.push(data);
       // don't respond to our own messages
-      if (data.from.id !== AI_USERNAME && data.from.id !== "system") {
+      if (data.from.id !== AI_USERNAME && data.from.id !== "system" && counter % 2 == 0) {
         // construct a mesage history to send to the AI
         const prompt: AIMessage[] = [
           { role: "system", content: PROMPT },
