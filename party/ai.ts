@@ -33,6 +33,8 @@ function simulateUser(
 ) {
   let messages: Message[] = [];
   let identified = false;
+  let firstMessage = "";
+  let secondMessage = "";
 
   socket.addEventListener("message", async (message) => {
     if (!identified) {
@@ -54,32 +56,36 @@ function simulateUser(
     }
     if (data.type === "new") {
       messages.push(data);
-      if (data.from.id !== AI_USERNAME && data.from.id !== "system" && counter % 2 == 0) {
+      
+      if (data.from.id !== AI_USERNAME && data.from.id !== "system") {
+        if (!firstMessage) {
+          firstMessage = data.text;
+        } else if (!secondMessage) {
+          secondMessage = data.text;
 
-        const id = nanoid();
-        let text = "";
+          const id = nanoid();
+          let text = "";
 
-        // Replace OpenAI API call with hardcoded response from another API
-        const response = await fetch('https://flask-production-35f0.up.railway.app/create_game', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            player1_description: "Warrior",
-            player2_description: "Mage",
-          }),
-        });
+          // Using firstMessage and secondMessage as player descriptions
+          const response = await fetch('https://flask-production-35f0.up.railway.app/create_game', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              player1_description: firstMessage,
+              player2_description: secondMessage,
+            }),
+          });
 
-        const hardCodedData = await response.json();
-        console.log(hardCodedData);
-        
-        // Use hardCodedData as your message content
-        text = JSON.stringify(hardCodedData);
-
-        socket.send(
-          JSON.stringify(<UserMessage>{ type: "new", id, text })
-        );
+          const hardCodedData = await response.json();
+          
+          // Use hardCodedData as your message content
+          text = JSON.stringify(hardCodedData);
+          socket.send(
+            JSON.stringify(<UserMessage>{ type: "new", id, text })
+          );
+        }
       }
     }
   });
