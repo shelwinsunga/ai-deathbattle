@@ -7,6 +7,7 @@ app = Flask(__name__)
 # Define the State class
 class State(BaseModel):
     description: str
+    current_turn: int
     player1_character_short_name: str
     player1_health: int
     player1_endurance: int
