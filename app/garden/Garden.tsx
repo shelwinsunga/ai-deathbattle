@@ -112,7 +112,6 @@ export default function Garden() {
           )}
         </div>
       </div>
-      <ConnectionStatus socket={socket} />
     </>
   );
 }

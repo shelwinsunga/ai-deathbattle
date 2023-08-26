@@ -28,18 +28,14 @@ export default async function ChatRoomPage({
   return (
     <div className="w-full flex flex-col gap-4 justify-between items-start">
       <div className="flex flex-wrap justify-start items-center gap-x-4 gap-y-2">
-        <Link href="/chat" className="text-stone-400 whitespace-nowrap">
-          &lt;- All Rooms
-        </Link>
-        <ClearRoomButton roomId={params.roomId} />
       </div>
       {room ? (
         <>
           <div className="w-full flex flex-row justify-between items-start pb-6">
             <div>
-              <h1 className="text-4xl font-medium">{params.roomId}</h1>
+              <h1 className="text-4xl font-medium"> <Link href="/">Room</Link></h1>
             </div>
-            <PresenceBar roomId={params.roomId} />
+            
           </div>
 
           <Room
