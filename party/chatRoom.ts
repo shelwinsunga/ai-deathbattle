@@ -24,6 +24,10 @@ import { AI_USERNAME } from './ai';
 const DELETE_MESSAGES_AFTER_INACTIVITY_PERIOD = 1000 * 60 * 60 * 24; // 24 hours
 
 var counter = 0;
+var dict: { [key: string]: number } = {};
+var sentMessagesCount = 0;
+
+
 export {
   counter
 }
@@ -95,6 +99,7 @@ export default {
 
     // handle incoming messages from client
     const onUserMessage = async (message: UserMessage) => {
+      console.log(dict);
       // handle user authentication
       if (message.type === "identify") {
         if ((connection.user = await authenticateUser(room, message))) {
@@ -139,12 +144,82 @@ export default {
         // send new message to all connections
 
         if (message.type === "new") {
-          room.broadcast(newMessage(payload), []);
-          room.messages!.push(payload);
+          const keys = Object.keys(dict).length;
+          console.log(dict[payload.from.id]);
+          if (dict[payload.from.id] === 1 || (keys == 1 && dict[payload.from.id] != undefined)) {
+            // User has already sent a message in this cycle
+            return connection.send(systemMessage("Please wait for all users to respond."));
+        }
+        
+        // Update user status and broadcast message
+        
+        if(payload.from.id != AI_USERNAME){
+          dict[payload.from.id] = 1;
+          sentMessagesCount++;
+        }
+        room.broadcast(newMessage(payload), []);
+        room.messages!.push(payload);
+    
+        // Increment the sent messages count
+        
+    
+        // Check if all users have sent a message in this cycle
+        if (sentMessagesCount === Object.keys(dict).length && Object.keys(dict).length != 1) {
+            // Reset the cycle
+            for (let key in dict) {
+                dict[key] = 0;
+            }
+            sentMessagesCount = 0;
+        }
+
+          // if(payload.from.id in dict){
+          //   let total = Object.keys(dict).length;
+          //   //already in dict
+          //   if(dict[payload.from.id] == 0 && total > 1){
+          //     //not yet sent message
+          //     room.broadcast(newMessage(payload), []);
+          //     room.messages!.push(payload);
+          //     dict[payload.from.id] = 1;
+          //     //here? check if all users are at 1, then reset to 0
+          //     let uniform = true;
+          //     for(let key in dict){
+          //       if (dict[key] != 1){
+          //         uniform = false;
+          //       }
+          //     }
+          //     if(uniform && total > 1){
+          //       for(let key in dict){
+          //         dict[key] = 0;
+          //       }
+          //     }
+
+          //   }else{
+          //     //system message
+          //     systemMessage("Please wait for all users to respond.");
+          //   }
+          // }else if(payload.from.id != AI_USERNAME){
+          //   //handle new user, adds them to game, does message, increment
+          //   console.log(1);
+          //   dict[payload.from.id] = 1;
+          //   room.broadcast(newMessage(payload), []);
+          //   room.messages!.push(payload);
+          //   //dict[payload.from.id] = 1;
+          //   let total = Object.keys(dict).length;
+          //   let uniform = true;
+          //     for(let key in dict){
+          //       if (dict[key] != 1){
+          //         uniform = false;
+          //       }
+          //     }
+          // }else{
+          //   //regular for ai
+          //   room.broadcast(newMessage(payload), []);
+          //   room.messages!.push(payload);
+          // }
           if(payload.from.id != AI_USERNAME){
             counter++;
           }
-          console.log(counter);
+          
         }
 
         // send edited message to all connections
