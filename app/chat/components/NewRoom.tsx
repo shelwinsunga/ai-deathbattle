@@ -3,6 +3,12 @@
 import { useRouter } from "next/navigation";
 import { FormEvent } from "react";
 import { PARTYKIT_URL } from "@/app/env";
+import { Yusei_Magic } from 'next/font/google'
+import { text } from "stream/consumers";
+
+const yusei = Yusei_Magic({
+    weight: '400',
+    subsets: ['latin'] })
 
 export default function NewRoom(props: { slug: string }) {
   const { slug } = props;
@@ -21,9 +27,10 @@ export default function NewRoom(props: { slug: string }) {
       <form onSubmit={handleClick}>
         <button
           type="submit"
-          className="bg-stone-200 hover:bg-stone-300 px-2 py-1 rounded whitespace-nowrap"
+          className={`text-gray-500 bg-stone-200 hover:bg-stone-300 px-4 py-3 rounded-lg whitespace-nowrap ${yusei.className}`}
+          style={{backgroundColor: '3D3B67'}}
         >
-          Create New Room -&gt;
+          Create Room -&gt;
         </button>
       </form>
     </div>
