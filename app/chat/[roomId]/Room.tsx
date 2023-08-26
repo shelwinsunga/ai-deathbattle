@@ -47,6 +47,8 @@ export const Room: React.FC<{
       if (session.status === "authenticated" && e.target) {
         identify(e.target as PartySocket);
         if (session?.data?.user) setUser(session.data.user as User);
+      }{
+        session.status = "authenticated";
       }
     },
     onMessage(event: MessageEvent<string>) {

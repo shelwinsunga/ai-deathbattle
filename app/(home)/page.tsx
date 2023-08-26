@@ -1,7 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { Yusei_Magic } from "next/font/google";
+import localFont from 'next/font/local'
 import { useCursors } from "./cursors-provider";
+
+const yusei = Yusei_Magic({ 
+  weight: '400',
+  subsets: ['latin'] })
+
+const dream = localFont({ src: '../../public/the-fountain-of-wishes.regular.ttf'})
 
 export default function Home() {
   const { getCount } = useCursors();
@@ -17,6 +25,8 @@ export default function Home() {
 
       <section className="flex flex-col gap-2">
         <h1 className="text-4xl font-medium pb-6">PartyKit Starter Kit</h1>
+        <h1 className={yusei.className}>this is yusei</h1>
+        <h1 className={dream.className}>this is fountain of dreams</h1>
         <p>What you’ll find here...</p>
         <ul className="list-disc list-inside">
           <li>Multiplayer chatrooms</li>

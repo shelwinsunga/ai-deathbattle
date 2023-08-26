@@ -64,7 +64,7 @@ function simulateUser(
         })
       );
     }
-
+    
     const data = JSON.parse(message.data as string) as ChatMessage;
     // the room sent us the whole list of messages
     if (data.type === "sync") {
@@ -77,8 +77,10 @@ function simulateUser(
     // a client sent a nessage message
     if (data.type === "new") {
       messages.push(data);
+      console.log(1);
       // don't respond to our own messages
       if (data.from.id !== AI_USERNAME && data.from.id !== "system") {
+        console.log(3);
         // construct a mesage history to send to the AI
         const prompt: AIMessage[] = [
           { role: "system", content: PROMPT },

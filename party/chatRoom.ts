@@ -90,7 +90,7 @@ export default {
     // handle incoming messages from client
     const onUserMessage = async (message: UserMessage) => {
       // handle user authentication
-      if (message.type === "identify") {
+        if (message.type === "identify") {
         if ((connection.user = await authenticateUser(room, message))) {
           updateRoomList("enter", connection, room);
           connection.send(
@@ -122,16 +122,17 @@ export default {
         if (message.text.length > 1000) {
           return connection.send(systemMessage("Message too long"));
         }
-
+        
         const payload = <Message>{
           id: message.id ?? nanoid(),
-          from: { id: user.username, image: user.image },
+          from: { id: user.username, image: "https://pbs.twimg.com/profile_images/1634058036934500352/b4F1eVpJ_400x400.jpg" },
           text: message.text,
           at: Date.now(),
         };
 
         // send new message to all connections
         if (message.type === "new") {
+          console.log("2:" + message.id);
           room.broadcast(newMessage(payload), []);
           room.messages!.push(payload);
         }
