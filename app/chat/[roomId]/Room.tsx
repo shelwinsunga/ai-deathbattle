@@ -134,7 +134,6 @@ export const Room: React.FC<{
           <span />
         )}
       </div>
-      <ConnectionStatus socket={socket} />
     </>
   );
 };
