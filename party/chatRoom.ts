@@ -19,8 +19,14 @@ import {
   systemMessage,
 } from "./utils/message";
 import { json, notFound, ok } from "./utils/response";
+import { AI_USERNAME } from './ai';
 
 const DELETE_MESSAGES_AFTER_INACTIVITY_PERIOD = 1000 * 60 * 60 * 24; // 24 hours
+
+var counter = 0;
+export {
+  counter
+}
 
 // track additional information on room and connection objects
 type ChatRoom = PartyKitRoom & { messages?: Message[]; ai?: boolean };
@@ -131,9 +137,14 @@ export default {
         };
 
         // send new message to all connections
+
         if (message.type === "new") {
           room.broadcast(newMessage(payload), []);
           room.messages!.push(payload);
+          if(payload.from.id != AI_USERNAME){
+            counter++;
+          }
+          console.log(counter);
         }
 
         // send edited message to all connections
