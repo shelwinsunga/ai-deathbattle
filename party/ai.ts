@@ -35,6 +35,7 @@ function simulateUser(
   let identified = false;
   let firstMessage = "";
   let secondMessage = "";
+  let gameState = null;
 
   socket.addEventListener("message", async (message) => {
     if (!identified) {
@@ -56,17 +57,14 @@ function simulateUser(
     }
     if (data.type === "new") {
       messages.push(data);
-      
+
       if (data.from.id !== AI_USERNAME && data.from.id !== "system") {
         if (!firstMessage) {
           firstMessage = data.text;
         } else if (!secondMessage) {
           secondMessage = data.text;
 
-          const id = nanoid();
-          let text = "";
-
-          // Using firstMessage and secondMessage as player descriptions
+          // Create game
           const response = await fetch('https://flask-production-35f0.up.railway.app/create_game', {
             method: 'POST',
             headers: {
@@ -78,13 +76,42 @@ function simulateUser(
             }),
           });
 
-          const hardCodedData = await response.json();
-          
-          // Use hardCodedData as your message content
-          text = JSON.stringify(hardCodedData);
+          gameState = await response.json();
+
+          // Manually add current_turn if missing
+          if (!gameState.current_turn) {
+            gameState.current_turn = 0;
+          }
+
+          const id = nanoid();
           socket.send(
-            JSON.stringify(<UserMessage>{ type: "new", id, text })
+            JSON.stringify(<UserMessage>{ type: "new", id, text: JSON.stringify(gameState) })
           );
+        } else {
+          // Update game state
+          gameState.current_turn += 1; // Increment turn
+
+          const response = await fetch('https://flask-production-35f0.up.railway.app/take_turn', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              state: gameState,
+              player1_action: firstMessage,
+              player2_action: secondMessage,
+            }),
+          });
+
+          gameState = await response.json();
+          const id = nanoid();
+          socket.send(
+            JSON.stringify(<UserMessage>{ type: "new", id, text: JSON.stringify(gameState) })
+          );
+
+          // Reset action messages
+          firstMessage = "";
+          secondMessage = "";
         }
       }
     }
