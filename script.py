@@ -63,3 +63,21 @@ def start_conversation():
 
 if __name__ == "__main__":
     start_conversation()
+
+
+
+
+
+
+
+
+# building of the best companies
+# survive the longest in a foreign planet
+# 1v1 deathbattle
+# hide and seek
+# debate tournament
+# spy infiltration
+# protect the president, attack the president
+# win a lane in league 1v1
+# who can travel back in time and kill hitler first
+# protect a village from a flurry of monsters
