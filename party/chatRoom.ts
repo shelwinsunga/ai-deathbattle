@@ -33,7 +33,7 @@ export {
 }
 
 // track additional information on room and connection objects
-type ChatRoom = PartyKitRoom & { messages?: Message[]; ai?: boolean };
+type ChatRoom = PartyKitRoom & { messages?: Message[]; ai?: boolean; pendingMessages?: Message[]; };
 type ChatConnection = PartyKitConnection & { user?: User | null };
 
 /**
@@ -111,6 +111,18 @@ export default {
               )
             );
           }
+          connection.send(
+            newMessage({
+              from: { id: "system"},
+              text: `Welcome, ${connection.user.username}!`,
+            })
+          );
+          connection.send(
+            newMessage({
+              from: { id: AI_USERNAME , image: "https://pbs.twimg.com/profile_images/1634058036934500352/b4F1eVpJ_400x400.jpg"},
+              text: `In a mystical rendition of the Roman Colosseum, competitors from diverse backgrounds converge, each vying for the coveted golden idol. Amidst the historic arches and roaring crowds, are the contestants. As the games begin, alliances form and strategies collide, all with the single goal of possessing the shimmering prize.`,
+            })
+          );
           return;
         }
       }
@@ -135,6 +147,8 @@ export default {
           at: Date.now(),
         };
 
+        
+
         // send new message to all connections
 
         if (message.type === "new") {
@@ -146,25 +160,41 @@ export default {
         }
         
         // Update user status and broadcast message
-        
-        if(payload.from.id != AI_USERNAME){
-          dict[payload.from.id] = 1;
-          sentMessagesCount++;
-        }
-        room.broadcast(newMessage(payload), []);
-        room.messages!.push(payload);
+        if (payload.from.id === AI_USERNAME) {
+          room.broadcast(newMessage(payload), []);
+          room.messages!.push(payload);
+      }else{
+        room.pendingMessages = room.pendingMessages || [];
+        room.pendingMessages.push(payload);
+            dict[payload.from.id] = 1;
+            sentMessagesCount++;
+            connection.send(
+              newMessage({
+                from: { id: "system"},
+                text: `You sent: ${payload.text}. Please wait for the other player to respond.`,
+              })
+            );
+      }
+    
     
         // Increment the sent messages count
         
     
         // Check if all users have sent a message in this cycle
         if (sentMessagesCount === Object.keys(dict).length && Object.keys(dict).length != 1) {
-            // Reset the cycle
-            for (let key in dict) {
-                dict[key] = 0;
-            }
-            sentMessagesCount = 0;
-        }
+          // Broadcast all pending messages to all connections
+          for (let pendingMessage of room.pendingMessages) {
+              room.broadcast(newMessage(pendingMessage), []);
+              room.messages!.push(pendingMessage);
+          }
+          // Clear the pendingMessages
+          room.pendingMessages = [];
+          // Reset the cycle
+          for (let key in dict) {
+              dict[key] = 0;
+          }
+          sentMessagesCount = 0;
+      }
 
           if(payload.from.id != AI_USERNAME){
             counter++;
