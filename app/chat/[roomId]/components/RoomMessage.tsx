@@ -9,6 +9,15 @@ export default function RoomMessage(props: {
   const { message, isMe } = props;
   const [formattedDate, setFormattedDate] = useState<string | null>();
 
+  const formatNewLines = (text: string) => {
+    return text.split('\n').map((str, index, array) => 
+      index === array.length - 1 ? str : <>
+        {str}
+        <br />
+      </>
+    );
+  };
+
   // Format the date on the client to avoid hydration mismatch
   useEffect(
     () => setFormattedDate(new Date(message.at).toLocaleTimeString()),
@@ -18,24 +27,19 @@ export default function RoomMessage(props: {
   if (message.from.id === "system") {
     return (
       <li className="text-stone-400 flex flex-col justify-center items-center text-center gap-1">
-        <span className="font-mono text-sm">{message.text}</span>
+        <span className="font-mono text-sm">{formatNewLines(message.text)}</span>
         <span className="text-xs">{formattedDate}</span>
       </li>
     );
   } else {
     return (
-      <li
-        className={`flex justify-start gap-2 ${isMe ? "flex-row-reverse" : ""}`}
-      >
+      <li className={`flex justify-start gap-2 ${isMe ? "flex-row-reverse" : ""}`}>
         <div className="grow-0">
-          <Avatar
-            username={message.from.id}
-            image={message.from.image ?? null}
-          />
+          <Avatar username={message.from.id} image={message.from.image ?? null} />
         </div>
         <div className={`flex flex-col gap-1 ${isMe ? "items-end" : ""}`}>
           <span className="bg-stone-100 px-2 py-1 rounded-xl">
-            {message.text}
+            {formatNewLines(message.text)}
           </span>
           <span className="text-xs text-stone-400">
             {formattedDate ?? <>&nbsp;</>}
