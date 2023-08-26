@@ -20,6 +20,8 @@ export async function getChatCompletionResponse(
     })
   );
 
+  
+
   const prompt = chain.map((message) => {
     return { role: message.role, content: message.content };
   });
