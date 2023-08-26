@@ -104,12 +104,6 @@ export default {
       if (message.type === "identify") {
         if ((connection.user = await authenticateUser(room, message))) {
           updateRoomList("enter", connection, room);
-          connection.send(
-            newMessage({
-              from: { id: "system" },
-              text: `Welcome ${connection.user.username}!`,
-            })
-          );
           if (!room.env.OPENAI_API_KEY) {
             connection.send(
               systemMessage(

@@ -7,6 +7,7 @@ app = Flask(__name__)
 # Define the State class
 class State(BaseModel):
     description: str
+    current_turn: int
     player1_character_short_name: str
     player1_health: int
     player1_endurance: int
@@ -29,7 +30,7 @@ def create_game():
     player2_description = data.get('player2_description')
     
     initial_state = create_initial_state(player1_description, player2_description)
-    return jsonify(initial_state.dict())
+    return initial_state.dict()
 
 @app.route('/take_turn', methods=['POST'])
 def take_turn():
@@ -40,7 +41,7 @@ def take_turn():
     
     current_state = State(**state_data)
     updated_state = update_state(current_state, player1_action, player2_action)
-    return jsonify(updated_state.dict())
+    return updated_state.dict()
 
 @app.route('/winner', methods=['POST'])
 def winner():
@@ -50,7 +51,7 @@ def winner():
     current_state = State(**state_data)
     winner_state = check_winner(current_state)
     
-    return jsonify({"winner_state": winner_state})
+    return {"winner_state": winner_state}
 
 if __name__ == '__main__':
     app.run(debug=True)
