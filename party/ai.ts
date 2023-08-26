@@ -111,8 +111,6 @@ const id = nanoid();
 socket.send(
   JSON.stringify({ type: "new", id, text: output })
 );
-
-        
         } else {
           // Update game state
           gameState.current_turn += 1; // Increment turn
@@ -139,7 +137,6 @@ socket.send(
           output += "Character: " + gameState.player1_character_short_name + "\n";
           output += "Endurance: " + gameState.player1_endurance + "\n";
           output += "Health: " + gameState.player1_health + "\n";
-          output += "Idol Turn Count: " + gameState.player1_idol_turn_count + "\n";
           output += "Mana: " + gameState.player1_mana + "\n";
           output += "Spells: " + gameState.player1_spells.join(", ") + "\n";
           output += "Weapons: " + gameState.player1_weapons.join(", ") + "\n\n";
@@ -148,7 +145,6 @@ socket.send(
           output += "Character: " + gameState.player2_character_short_name + "\n";
           output += "Endurance: " + gameState.player2_endurance + "\n";
           output += "Health: " + gameState.player2_health + "\n";
-          output += "Idol Turn Count: " + gameState.player2_idol_turn_count + "\n";
           output += "Mana: " + gameState.player2_mana + "\n";
           output += "Spells: " + gameState.player2_spells.join(", ") + "\n";
           output += "Weapons: " + gameState.player2_weapons.join(", ");
