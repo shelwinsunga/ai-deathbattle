@@ -33,7 +33,7 @@ export default async function ChatRoomPage({
         <>
           <div className="w-full flex flex-row justify-between items-start pb-6">
             <div>
-              <h1 className="text-4xl font-medium">Room</h1>
+              <h1 className="text-4xl font-medium"> <Link href="/">Room</Link></h1>
             </div>
             
           </div>
